@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Lebaran IQ Test - Final Boss ✨</title>
+    <title>KUIS LEBARAN</title>
     <link href="https://fonts.googleapis.com/css2?family=Crimson+Text:ital,wght@0,600;1,400&family=Poppins:wght@300;600&display=swap" rel="stylesheet">
     <style>
         :root {
@@ -73,10 +73,15 @@
         .falling-item { position: absolute; top: -60px; pointer-events: none; z-index: 1; font-size: 25px; }
     </style>
 </head>
-<body onclick="forceMusic()">
 
 <audio id="bgMusic" loop preload="auto">
     <source src="marhaban.mp3" type="audio/mpeg">
+</audio>
+    <audio id="sfxWin" preload="auto">
+    <source src="animewow.mp3" type="audio/mpeg">
+</audio>
+<audio id="sfxLose" preload="auto">
+    <source src="spongebobfail.mp3" type="audio/mpeg">
 </audio>
 
 <button id="music-toggle" onclick="toggleMusic()">🔇</button>
@@ -85,9 +90,9 @@
     <div id="intro-box">
         <img src="https://media.giphy.com/media/oPso1zAFajEx8tQSl9/giphy.gif" style="width: 130px;" alt="Penguin">
         <h2>Tes IQ Lebaran</h2>
-        <p style="font-size: 0.85rem; opacity: 0.8; margin-bottom: 15px;">Dapet skor < 80? Fix butuh MBG!</p>
-        <input type="text" id="sender-name" placeholder="Siapa namamu, Cuy?">
-        <button class="btn-main" onclick="startQuiz()">Mulai Tes 🎵</button>
+        <p style="font-size: 0.85rem; opacity: 0.8; margin-bottom: 15px;">Ayo tes pengetahuanmu soal lebaran</p>
+        <input type="text" id="sender-name" placeholder="Tulis namamu?">
+        <button class="btn-main" onclick="startQuiz()">Mulai Kuis</button>
     </div>
 
     <div id="quiz-box" class="hidden">
@@ -104,7 +109,7 @@
         <h2 style="margin-bottom: 5px; color: #fff;">Skor: <span id="final-score" style="color: var(--gold);">0</span></h2>
         <p id="from-text" style="color: var(--gold); font-weight: 600; font-size: 0.95rem; margin-bottom: 10px;"></p>
         <p id="final-wish" style="line-height: 1.6; font-size: 0.95rem; margin-bottom: 20px;"></p>
-        <p style="font-size: 0.7rem; opacity: 0.5;">- Minal Aidin Wal Faizin -</p>
+        <p style="font-size: 0.7rem; opacity: 0.5;">- Minal Aidin Wal Faizin dari Choirunfiqri-</p>
     </div>
 </div>
 
@@ -112,9 +117,9 @@
     const quiz = [
         { q: "Makanan yang dibungkus daun kelapa?", a: "ketupat" },
         { q: "Tradisi pulang ke kampung halaman?", a: "mudik" },
-        { q: "Zakat yang wajib dibayar sebelum Idul Fitri?", a: "fitrah" },
-        { q: "Camilan sejuta umat dalam kaleng biskuit legendaris?", a: "khong guan" },
-        { q: "Setelah ramadhan selesai, masuk bulan?", a: "syawal" }
+        { q: "Lebaran Idul Fitri di rayakan pada tanggal berapa kalender hijriah?", a: "1 syawal" },
+        { q: "Berapa kali takbir pada rakaat pertama sholat ied?", a: "7" },
+        { q: "Minal 'Aidin wal Faizin artinya?", a: "Semoga kita termasuk orang-orang yang kembali ke fitrah dan meraih kemenangan" }
     ];
 
     let step = 0;
@@ -139,7 +144,7 @@
 
     function startQuiz() {
         namaUser = document.getElementById('sender-name').value;
-        if (!namaUser) return alert("Nama jangan kosong, Cuy!");
+        if (!namaUser) return alert("Nama jangan kosong ya!");
         
         audio.play().then(() => {
             document.getElementById('music-toggle').innerText = "🔊";
@@ -188,29 +193,43 @@
     }
 
     function showFinal() {
-        document.getElementById('quiz-box').style.display = "none";
-        const wishBox = document.getElementById('wish-box');
-        const imgContainer = document.getElementById('result-img-container');
-        const statusEl = document.getElementById('status-text');
-        const wishEl = document.getElementById('final-wish');
-        
-        wishBox.classList.remove('hidden');
-        document.getElementById('final-score').innerText = score;
-        document.getElementById('from-text').innerText = "Untuk: " + namaUser;
+    document.getElementById('quiz-box').style.display = "none";
+    const wishBox = document.getElementById('wish-box');
+    const imgContainer = document.getElementById('result-img-container');
+    const statusEl = document.getElementById('status-text');
+    const wishEl = document.getElementById('final-wish');
+    
+    // Ambil elemen audio SFX
+    const sfxWin = document.getElementById('sfxWin');
+    const sfxLose = document.getElementById('sfxLose');
+    
+    // Matikan musik utama sebentar biar SFX kedengeran jelas (Opsional)
+    audio.volume = 0.2; 
 
-        if (score >= 80) {
-            statusEl.innerText = "✨ CERDAS ✨";
-            statusEl.style.color = "var(--gold)";
-            imgContainer.innerHTML = `<img src="https://media.giphy.com/media/2YO6J0WGjM8zkqnS71/giphy.gif" class="giphy-img">`;
-            wishEl.innerHTML = "Selamat Idul Fitri! Maaf lahir batin. Orang cerdas kayak kamu emang GOAT! 🌙";
-            startFalling("✨"); 
-        } else {
-            statusEl.innerText = "❌ KURANG GIZI ❌";
-            statusEl.style.color = "var(--red)";
-            imgContainer.innerHTML = `<img src="https://media.giphy.com/media/Wmfhh36FNLZaXtfhdr/giphy.gif" class="giphy-img">`;
-            wishEl.innerHTML = "Maaf, sepertinya anda memerlukan MBG. <br><br> Tapi gapapa, Selamat Lebaran! 🙏";
-            startFalling("💧");
-        }
+    wishBox.classList.remove('hidden');
+    document.getElementById('final-score').innerText = score;
+    document.getElementById('from-text').innerText = "Untuk: " + namaUser;
+
+    if (score >= 80) {
+        // --- JIKA CERDAS ---
+        sfxWin.play();
+        statusEl.innerText = "✨ CERDAS ✨";
+        statusEl.style.color = "var(--gold)";
+        imgContainer.innerHTML = `<img src="https://media.giphy.com/media/2YO6J0WGjM8zkqnS71/giphy.gif" class="giphy-img">`;
+        wishEl.innerHTML = "Selamat Idul Fitri! Maaf lahir batin. Orang cerdas kayak kamu gak perlu MBG 🕺";
+        startFalling("✨"); 
+    } else {
+        // --- JIKA KURANG GIZI ---
+        sfxLose.play();
+        statusEl.innerText = "❌ KURANG GIZI ❌";
+        statusEl.style.color = "var(--red)";
+        imgContainer.innerHTML = `<img src="https://media.giphy.com/media/Wmfhh36FNLZaXtfhdr/giphy.gif" class="giphy-img">`;
+        wishEl.innerHTML = "Maaf, sepertinya anda memerlukan MBG. <br><br> Tapi gapapa, Selamat Lebaran! mohon maaf lahir dan batin ya 🙏";
+        startFalling("🤪");
+    }
+    
+    // Balikin volume musik utama setelah 3 detik
+    setTimeout(() => { audio.volume = 0.7; }, 3000);
     }
 
     function startFalling(icon) {
