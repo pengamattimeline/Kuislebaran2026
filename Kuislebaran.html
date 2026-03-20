@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lebaran IQ Test - Final Boss ✨</title>
+    <link href="https://fonts.googleapis.com/css2?family=Crimson+Text:ital,wght@0,600;1,400&family=Poppins:wght@300;600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --gold: #f1c40f;
+            --emerald: #064e3b;
+            --white: #ffffff;
+            --red: #ff4757;
+            --green-light: #00ff88;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: #042f2e;
+            background-image: radial-gradient(circle at center, #065f46 0%, #042f2e 100%);
+            display: flex; justify-content: center; align-items: center;
+            min-height: 100vh; color: var(--white); overflow: hidden; padding: 20px;
+        }
+
+        #main-card {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(20px);
+            border: 2px solid var(--gold);
+            padding: 30px 20px; border-radius: 30px;
+            text-align: center; width: 100%; max-width: 420px;
+            position: relative; z-index: 20;
+            box-shadow: 0 0 50px rgba(0,0,0,0.6);
+        }
+
+        h2 { font-family: 'Crimson Text', serif; color: var(--gold); margin-bottom: 10px; font-size: 1.8rem; }
+
+        .score-badge {
+            background: var(--gold); color: #000;
+            padding: 5px 15px; border-radius: 20px;
+            font-weight: bold; font-size: 0.8rem; margin-bottom: 15px; display: inline-block;
+        }
+
+        input[type="text"] {
+            width: 100%; padding: 14px; margin: 10px 0;
+            border-radius: 15px; border: 1px solid var(--gold);
+            background: rgba(255,255,255,0.15); color: white;
+            text-align: center; outline: none; font-size: 1rem;
+        }
+
+        .btn-main {
+            background: linear-gradient(45deg, #d4af37, #f1c40f);
+            color: #064e3b; border: none; padding: 15px;
+            border-radius: 15px; font-weight: 800; cursor: pointer;
+            width: 100%; transition: 0.3s; margin-top: 10px;
+            text-transform: uppercase; letter-spacing: 1px;
+        }
+
+        .hidden { display: none; }
+
+        #key-hint { font-size: 0.85rem; margin-top: 12px; font-weight: 600; min-height: 20px; }
+
+        #music-toggle {
+            position: fixed; top: 20px; left: 20px;
+            background: rgba(0,0,0,0.5); border: 1px solid var(--gold);
+            color: white; width: 45px; height: 45px; border-radius: 50%; z-index: 100;
+            display: flex; align-items: center; justify-content: center;
+        }
+
+        .giphy-img { width: 200px; border-radius: 20px; margin-bottom: 15px; box-shadow: 0 10px 20px rgba(0,0,0,0.3); }
+
+        .falling-item { position: absolute; top: -60px; pointer-events: none; z-index: 1; font-size: 25px; }
+    </style>
+</head>
+<body onclick="forceMusic()">
+
+<audio id="bgMusic" loop preload="auto">
+    <source src="https://assets.mixkit.co/music/preview/mixkit-arabic-mystery-642.mp3" type="audio/mpeg">
+</audio>
+
+<button id="music-toggle" onclick="toggleMusic()">🔇</button>
+
+<div id="main-card">
+    <div id="intro-box">
+        <img src="https://media.giphy.com/media/oPso1zAFajEx8tQSl9/giphy.gif" style="width: 130px;" alt="Penguin">
+        <h2>Tes IQ Lebaran</h2>
+        <p style="font-size: 0.85rem; opacity: 0.8; margin-bottom: 15px;">Dapet skor < 80? Fix butuh MBG!</p>
+        <input type="text" id="sender-name" placeholder="Siapa namamu, Cuy?">
+        <button class="btn-main" onclick="startQuiz()">Mulai Tes 🎵</button>
+    </div>
+
+    <div id="quiz-box" class="hidden">
+        <div class="score-badge">Soal <span id="current-q">1</span>/5</div>
+        <p id="q-text" style="font-size: 1.1rem; font-weight: 600; margin-bottom: 10px;"></p>
+        <input type="text" id="ans-input" placeholder="Jawaban kamu..." autocomplete="off">
+        <button class="btn-main" id="submit-btn" onclick="check()">Kirim Jawaban</button>
+        <p id="key-hint"></p>
+    </div>
+
+    <div id="wish-box" class="hidden">
+        <div id="result-img-container"></div>
+        <div id="status-text" style="font-size: 1.6rem; font-weight: 900; margin: 5px 0;"></div>
+        <h2 style="margin-bottom: 5px; color: #fff;">Skor: <span id="final-score" style="color: var(--gold);">0</span></h2>
+        <p id="from-text" style="color: var(--gold); font-weight: 600; font-size: 0.95rem; margin-bottom: 10px;"></p>
+        <p id="final-wish" style="line-height: 1.6; font-size: 0.95rem; margin-bottom: 20px;"></p>
+        <p style="font-size: 0.7rem; opacity: 0.5;">- Minal Aidin Wal Faizin -</p>
+    </div>
+</div>
+
+<script>
+    const quiz = [
+        { q: "Makanan yang dibungkus daun kelapa?", a: "ketupat" },
+        { q: "Tradisi pulang ke kampung halaman?", a: "mudik" },
+        { q: "Zakat yang wajib dibayar sebelum Idul Fitri?", a: "fitrah" },
+        { q: "Camilan sejuta umat dalam kaleng biskuit legendaris?", a: "khong guan" },
+        { q: "Setelah ramadhan selesai, masuk bulan?", a: "syawal" }
+    ];
+
+    let step = 0;
+    let score = 0;
+    let namaUser = "";
+    const audio = document.getElementById('bgMusic');
+
+    // Fungsi biar musik dipaksa nyala tiap ada interaksi
+    function forceMusic() {
+        if (audio.paused && namaUser !== "") {
+            audio.play().then(() => {
+                document.getElementById('music-toggle').innerText = "🔊";
+            }).catch(e => console.log("Menunggu interaksi..."));
+        }
+    }
+
+    function toggleMusic() {
+        const btn = document.getElementById('music-toggle');
+        if (audio.paused) { audio.play(); btn.innerText = "🔊"; }
+        else { audio.pause(); btn.innerText = "🔇"; }
+    }
+
+    function startQuiz() {
+        namaUser = document.getElementById('sender-name').value;
+        if (!namaUser) return alert("Nama jangan kosong, Cuy!");
+        
+        audio.play().then(() => {
+            document.getElementById('music-toggle').innerText = "🔊";
+        });
+        
+        document.getElementById('intro-box').style.display = "none";
+        document.getElementById('quiz-box').classList.remove('hidden');
+        load();
+    }
+
+    function load() {
+        document.getElementById('current-q').innerText = step + 1;
+        document.getElementById('q-text').innerText = quiz[step].q;
+        document.getElementById('ans-input').value = "";
+        document.getElementById('key-hint').innerText = "";
+        document.getElementById('submit-btn').disabled = false;
+        document.getElementById('ans-input').focus();
+    }
+
+    function check() {
+        forceMusic(); // Cek lagi musik pas jawab
+        const inputField = document.getElementById('ans-input');
+        const input = inputField.value.toLowerCase().trim();
+        const hint = document.getElementById('key-hint');
+        const submitBtn = document.getElementById('submit-btn');
+
+        submitBtn.disabled = true;
+
+        if (input.includes(quiz[step].a)) {
+            score += 20;
+            hint.innerText = "✅ BENAR! Jawaban: " + quiz[step].a.toUpperCase();
+            hint.style.color = "var(--green-light)";
+        } else {
+            hint.innerText = "❌ SALAH! Jawaban: " + quiz[step].a.toUpperCase();
+            hint.style.color = "var(--red)";
+        }
+
+        setTimeout(() => {
+            step++;
+            if (step < quiz.length) {
+                load();
+            } else {
+                showFinal();
+            }
+        }, 1800); 
+    }
+
+    function showFinal() {
+        document.getElementById('quiz-box').style.display = "none";
+        const wishBox = document.getElementById('wish-box');
+        const imgContainer = document.getElementById('result-img-container');
+        const statusEl = document.getElementById('status-text');
+        const wishEl = document.getElementById('final-wish');
+        
+        wishBox.classList.remove('hidden');
+        document.getElementById('final-score').innerText = score;
+        document.getElementById('from-text').innerText = "Untuk: " + namaUser;
+
+        if (score >= 80) {
+            statusEl.innerText = "✨ CERDAS ✨";
+            statusEl.style.color = "var(--gold)";
+            imgContainer.innerHTML = `<img src="https://media.giphy.com/media/2YO6J0WGjM8zkqnS71/giphy.gif" class="giphy-img">`;
+            wishEl.innerHTML = "Selamat Idul Fitri! Maaf lahir batin. Orang cerdas kayak kamu emang GOAT! 🌙";
+            startFalling("✨"); 
+        } else {
+            statusEl.innerText = "❌ KURANG GIZI ❌";
+            statusEl.style.color = "var(--red)";
+            imgContainer.innerHTML = `<img src="https://media.giphy.com/media/Wmfhh36FNLZaXtfhdr/giphy.gif" class="giphy-img">`;
+            wishEl.innerHTML = "Maaf, sepertinya anda memerlukan MBG. <br><br> Tapi gapapa, Selamat Lebaran! 🙏";
+            startFalling("💧");
+        }
+    }
+
+    function startFalling(icon) {
+        setInterval(() => {
+            const item = document.createElement('div');
+            item.className = "falling-item";
+            item.innerText = icon;
+            item.style.left = Math.random() * 95 + "vw";
+            item.style.transition = "all 5s linear";
+            document.body.appendChild(item);
+            setTimeout(() => {
+                item.style.transform = `translateY(${window.innerHeight + 100}px)`;
+                item.style.opacity = "0";
+            }, 100);
+            setTimeout(() => item.remove(), 5500);
+        }, 400);
+    }
+</script>
+</body>
+  </html>
